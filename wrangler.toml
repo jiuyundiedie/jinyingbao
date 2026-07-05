@@ -1,0 +1,6 @@
+name = "image-api"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+[vars]
+API_KEY = "my_secure_key_123"
