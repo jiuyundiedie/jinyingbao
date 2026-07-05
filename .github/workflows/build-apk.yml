@@ -17,6 +17,12 @@ jobs:
         with:
           node-version: 18
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: Install dependencies
         run: npm install
 
@@ -30,6 +36,10 @@ jobs:
           ./gradlew assembleRelease
 
       - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: android/app/build/outputs/apk/release/*.apk
         uses: actions/upload-artifact@v4
         with:
           name: app-release
