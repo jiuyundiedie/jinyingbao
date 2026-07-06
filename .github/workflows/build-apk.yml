@@ -9,38 +9,39 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: 克隆代码
+        run: |
+          git clone https://github.com/jiuyundiedie/jinyingbao.git .
+          git checkout main
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18  # 项目运行时用 18（兼容性好）
+      - name: 安装 Node.js 18
+        run: |
+          curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+          sudo apt-get install -y nodejs
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'  # Gradle 8.8 需要 Java 17+
+      - name: 安装 Java 17
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openjdk-17-jdk
+          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
 
-      - name: Install dependencies
+      - name: 安装依赖
         run: npm install
 
-      - name: Prebuild Android (生成原生代码)
+      - name: 预生成 Android 工程
         run: npx expo prebuild --platform android --clean
 
-      # 修复插件仓库（可选，但预防）
-      - name: Fix Gradle plugin repositories
+      - name: 修复 build.gradle（防止插件找不到）
         run: |
           echo "allprojects { repositories { google(); mavenCentral() } }" >> android/build.gradle
 
-      - name: Build Release APK
+      - name: 构建 Release APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease --stacktrace --no-daemon
+          ./gradlew assembleRelease --no-daemon
 
-      - name: Upload APK
+      - name: 上传 APK
         uses: actions/upload-artifact@v4
         with:
           name: app-release
