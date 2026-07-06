@@ -10,28 +10,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3   # 降级到 v3
 
-      - name: 强制使用 Node 20（忽略过时警告）
-        uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v3   # 降级到 v3
         with:
-          node-version: 20
+          node-version: 18
 
-      - name: 安装依赖
+      - name: Install dependencies
         run: npm install
 
-      - name: 预生成 Android 工程
+      - name: Prebuild Android
         run: npx expo prebuild --platform android --clean
 
-      - name: 构建 APK（忽略 Gradle 版本警告）
+      - name: Build Release APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease --warning-mode all --no-daemon --continue || true
-          ./gradlew assembleRelease --no-daemon
+          ./gradlew assembleRelease
 
-      - name: 上传 APK
-        uses: actions/upload-artifact@v4
+      - name: Upload APK
+        uses: actions/upload-artifact@v3   # 也降级
         with:
           name: app-release
           path: android/app/build/outputs/apk/release/*.apk
